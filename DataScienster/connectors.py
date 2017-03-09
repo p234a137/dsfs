@@ -138,3 +138,38 @@ def friends_of_friend_ids(user):
 print("new method, friends of ", users[3]["name"])
 print(friends_of_friend_ids(users[3]))
 
+
+# Common interests
+
+# this works but it is a bit slow because it has to search the whole list each time
+def data_scientists_who_like(target_interest):
+    return [user_id
+            for user_id, user_interest in interests
+            if user_interest == target_interest]
+
+
+# best to build an index from interest to users
+from collections import defaultdict
+
+# keys are interests, values are lists of user_ids with that interest
+user_ids_by_interest = defaultdict(list)
+
+for user_id, interest in interests:
+    user_ids_by_interest[interest].append(user_id)
+
+# and the reverse
+interests_by_user_id = defaultdict(list)
+for user_id, interest in interests:
+    interests_by_user_id[user_id].append(interest)
+
+
+def most_common_interests_with(user):
+    return Counter(interested_user_id
+            for interest in interests_by_user_id[user["id"]]
+            for interested_user_id in user_ids_by_interest[interest]
+            if interested_user_id != user["id"]
+            )
+
+print("\nmost common interests with user ", users[3]["name"])
+print(most_common_interests_with(users[3]))
+
