@@ -73,10 +73,49 @@ sorted(num_friends_by_id,                                # get it sorted
 
 # Data Scientists you might know
 
-"""
 def friends_of_friend_ids_bad(user):
     # "foaf" is short for "friend of a friend"
-    return [foaf["id"]
+    return [
+            foaf
             for friend in user["friends"] # for each of user's friends
-            for foaf in friend["friends"]] # get each of _their_friends
-"""
+            for foaf in users[friend]["friends"] # get each of _their_friends
+            ]
+
+
+# print out friends of friends
+for user in users:
+    print("user ", user["name"], " friends of friends")
+    print(friends_of_friend_ids_bad(user))
+            
+
+# or just one of them
+print("Just Hero")
+print(friends_of_friend_ids_bad(users[0]))
+
+
+
+# better friends-of-friends using Counter
+from collections import Counter  # not loaded by default
+
+
+def not_the_same(user, other_user):
+    """two users are not the same if they have different ids"""
+    return user["id"] != other_user["id"]
+
+def not_friends(user, other_user):
+    """other_user is not a friend if he is not in user["friends"];
+    that is, if he is not_the_same as all the people in user["friends"]"""
+    return all(not_the_same(friend, other_user)
+            for friend in user["friends"])
+
+def friends_of_friend_ids(user):
+    return Counter(foaf
+            for friend in user["friends"] # for each of user's friends
+            for foaf in users[friend]["friends"] # get each of _their_friends
+#            if not_the_same(user, users[foaf])
+#            and not_friends(user, users[foaf])
+        )
+
+print("new method, friends of ", users[3]["name"])
+print(friends_of_friend_ids(users[3]))
+
