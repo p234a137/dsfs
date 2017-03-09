@@ -105,15 +105,15 @@ def not_the_same(user, other_user):
 def not_friends(user, other_user):
     """other_user is not a friend if he is not in user["friends"];
     that is, if he is not_the_same as all the people in user["friends"]"""
-    return all(not_the_same(friend, other_user)
+    return all(not_the_same(users[friend], other_user)
             for friend in user["friends"])
 
 def friends_of_friend_ids(user):
     return Counter(foaf
             for friend in user["friends"] # for each of user's friends
             for foaf in users[friend]["friends"] # get each of _their_friends
-#            if not_the_same(user, users[foaf])
-#            and not_friends(user, users[foaf])
+            if not_the_same(user, users[foaf])
+            and not_friends(user, users[foaf])
         )
 
 print("new method, friends of ", users[3]["name"])
